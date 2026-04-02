@@ -1,14 +1,12 @@
 {
-  "name": "personalfinance",
+  "name": "personal-automations",
   "version": "1.0.0",
-  "description": "",
+  "description": "Monorepo de automatizaciones personales (dominios por carpeta: correo, finanzas reservado).",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "dev": "npx tsx scripts/dev-server.ts",
-    "tunnel": "ngrok http 3000",
-    "test:webhook": "npx tsx scripts/test-webhook.ts",
-    "test:smoke": "npx tsx scripts/smoke-test.ts",
-    "test:e2e": "npx tsx scripts/e2e-test.ts",
+    "test:smoke": "npx tsx scripts/verify-health.ts",
     "typecheck": "tsc --noEmit"
   },
   "repository": {
@@ -23,15 +21,11 @@
   },
   "homepage": "https://github.com/diegoaislasc/PersonalFinance#readme",
   "dependencies": {
-    "@google/genai": "^1.47.0",
-    "@notionhq/client": "^5.15.0",
-    "@upstash/redis": "^1.37.0",
-    "dotenv": "^17.3.1",
-    "twilio": "^5.13.1"
+    "@vercel/node": "^5.6.22",
+    "dotenv": "^17.3.1"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
-    "@vercel/node": "^5.6.22",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2",
     "vercel": "^50.37.3"

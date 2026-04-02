@@ -1,18 +1,18 @@
 import http from "node:http";
-import { parse } from "node:querystring";
 import { config } from "dotenv";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 config();
 
 const PORT = parseInt(process.env.PORT ?? "3000", 10);
 
 async function loadHandler() {
-  const mod = await import("../api/webhook");
+  const mod = await import("../api/health");
   return mod.default;
 }
 
 const server = http.createServer(async (req, res) => {
-  if (!req.url?.startsWith("/api/webhook")) {
+  if (!req.url?.startsWith("/api/health")) {
     res.writeHead(404, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ error: "Not found" }));
     return;
@@ -23,14 +23,13 @@ const server = http.createServer(async (req, res) => {
     chunks.push(chunk as Buffer);
   }
   const rawBody = Buffer.concat(chunks).toString();
-  const parsedBody = parse(rawBody);
 
   const vercelReq = {
     method: req.method,
     headers: req.headers,
-    body: parsedBody,
+    body: rawBody ? Object.fromEntries(new URLSearchParams(rawBody)) : {},
     query: {},
-  };
+  } as unknown as VercelRequest;
 
   const headersSent: Record<string, string> = {};
   let statusCode = 200;
@@ -62,7 +61,7 @@ const server = http.createServer(async (req, res) => {
 
   try {
     const handler = await loadHandler();
-    await handler(vercelReq, vercelRes);
+    await handler(vercelReq, vercelRes as unknown as VercelResponse);
   } catch (err) {
     console.error("Handler error:", err);
     if (!res.writableEnded) {
@@ -74,5 +73,5 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`\n  Dev server running at http://localhost:${PORT}`);
-  console.log(`  Webhook endpoint: http://localhost:${PORT}/api/webhook\n`);
+  console.log(`  Health: http://localhost:${PORT}/api/health\n`);
 });

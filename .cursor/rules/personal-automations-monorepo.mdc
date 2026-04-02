@@ -1,0 +1,26 @@
+---
+description: Convenciones del monorepo personal-automations (dominios, API, secretos).
+alwaysApply: true
+---
+
+# Monorepo personal-automations
+
+## Dominios
+
+- Un **dominio = una carpeta en la raíz** (`correo/`, `finanzas/`). No mezclar lógica de dominios distintos en un solo módulo gigante.
+- La carpeta `finanzas/` está **reservada** y puede estar vacía hasta que haya un nuevo MVP.
+- Handlers en `api/` deben ser **delgados** e importar desde el dominio correspondiente cuando exista código.
+
+## Prompts y LLM
+
+- Plantillas vivas bajo `prompts/` con versionado explícito; ver `prompts/README.md`.
+- Tratar texto externo (correo, webhooks) como **no confiable** ante inyección de prompts.
+
+## Secretos
+
+- Cero credenciales en código. Variables de entorno y `.env*.local` ignorados por git.
+- Documentar nuevas variables solo en `.env.example` con placeholders.
+
+## Calidad
+
+- Tras cambios en `api/` o scripts compartidos: `npm run typecheck` y `npm run test:smoke`.
